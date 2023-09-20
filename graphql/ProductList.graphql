@@ -1,5 +1,5 @@
-query ProductList($channel: String!, $first: Int!) {
-	products(first: $first, channel: $channel) {
+query ProductList {
+	products(first: 100, channel: "channel-pln", where: { isAvailable: true }) {
 		edges {
 			node {
 				id
@@ -11,9 +11,14 @@ query ProductList($channel: String!, $first: Int!) {
 				category {
 					name
 				}
-				pricing {
-					priceRange {
-						start {
+				productType {
+					isShippingRequired
+				}
+				defaultVariant {
+					id
+					name
+					pricing {
+						price {
 							gross {
 								amount
 								currency

@@ -1,4 +1,4 @@
-export default function Banner() {
+export function Banner() {
 	return (
 		<div className="flex items-center bg-gray-800 px-6 py-3">
 			<div className="block text-sm text-white">

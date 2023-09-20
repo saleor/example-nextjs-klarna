@@ -1,4 +1,12 @@
-import type { TypedDocumentString } from "@/generated/graphql";
+import { TypedDocumentString } from "@/generated/graphql";
+
+export const klarnaAppId = `app.saleor.klarna`;
+
+export const formatMoney = (amount: number, currency: string) =>
+	new Intl.NumberFormat("en-US", {
+		style: "currency",
+		currency,
+	}).format(amount);
 
 interface GraphQlError {
 	message: string;
@@ -14,10 +22,11 @@ export async function executeGraphQL<Result, Variables>({
 	cache,
 }: {
 	query: TypedDocumentString<Result, Variables>;
-	variables: Variables;
 	headers?: HeadersInit;
 	cache?: RequestCache;
-}): Promise<Result> {
+} & (Variables extends Record<string, never>
+	? { variables?: never }
+	: { variables: Variables })): Promise<Result> {
 	if (!endpoint) {
 		throw new Error("Missing SALEOR_API_URL");
 	}
@@ -38,7 +47,7 @@ export async function executeGraphQL<Result, Variables>({
 	const body = (await result.json()) as GraphQlErrorRespone<Result>;
 
 	if ("errors" in body) {
-		throw body.errors[0];
+		throw new Error(`GraphQL Error`, { cause: body.errors });
 	}
 
 	return body.data;

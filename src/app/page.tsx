@@ -1,51 +1,26 @@
-import Link from "next/link";
-import Image from "next/image";
-import { ProductListDocument } from "@/generated/graphql";
-import { executeGraphQL } from "@/lib";
-
-export const metadata = {
-	title: "Product List | Saleor Storefront",
-};
-
-export default async function Page() {
-	const data = await executeGraphQL({
-		query: ProductListDocument,
-		variables: {
-			channel: "default-channel",
-			first: 12,
-		},
-	});
-
+export default function RootPage() {
 	return (
-		<div className="mt-4 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-			{data.products?.edges.map(({ node: product }) => {
-				return (
-					<Link href={`/products/${product.id}`} key={product.id}>
-						<div>
-							<div className="min-h-80 h-80 overflow-hidden rounded-md border bg-slate-50 hover:bg-slate-100">
-								{product.thumbnail && (
-									<Image
-										width={256}
-										height={256}
-										alt={product.thumbnail.alt ?? ""}
-										src={product.thumbnail.url}
-										className="h-full w-full object-cover object-center p-4 hover:scale-105"
-									/>
-								)}
-							</div>
-							<div className="mt-2 flex justify-between">
-								<div>
-									<h3 className="text-sm font-semibold text-gray-700">{product.name}</h3>
-									<p className="text-sm text-gray-500">{product.category?.name}</p>
-								</div>
-								<p className="text-sm font-medium text-gray-900">
-									${product.pricing?.priceRange?.start?.gross.amount}
-								</p>
-							</div>
-						</div>
+		<div>
+			<h1 className="mb-8 text-5xl font-bold">Saleor Stripe Next.js example</h1>
+			<p className="mb-4 text-2xl">Select one of the approaches:</p>
+			<ul className="flex flex-row flex-wrap gap-x-4">
+				<li>
+					<a
+						href="/app-router"
+						className="flex h-36 w-72 items-center justify-center rounded-md border text-2xl font-bold shadow-md transition-shadow hover:shadow-lg"
+					>
+						Next.js App Router
+					</a>
+				</li>
+				{/* @todo <li>
+					<Link
+						href="/pages-router"
+						className="flex h-36 w-72 items-center justify-center rounded-md border text-2xl font-bold shadow-md transition-shadow hover:shadow-lg"
+					>
+						Next.js Pages Router
 					</Link>
-				);
-			})}
+				</li> */}
+			</ul>
 		</div>
 	);
 }
