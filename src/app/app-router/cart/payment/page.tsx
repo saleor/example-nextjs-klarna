@@ -39,6 +39,7 @@ export default async function CartPaymentPage({
 		);
 	}
 
+	// todo: use klarna, not stripe
 	const stripe = new Stripe(stripeData.publishableKey, { apiVersion: "2022-11-15" });
 
 	const paymentIntent = await stripe.paymentIntents.retrieve(searchParams.payment_intent, {
