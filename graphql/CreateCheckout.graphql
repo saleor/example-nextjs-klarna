@@ -3,7 +3,7 @@ mutation CreateCheckout($variantId: ID!) {
 		input: {
 			channel: "channel-pln"
 			lines: [{ quantity: 1, variantId: $variantId }]
-			languageCode: PL_PL
+			languageCode: EN_US
 			email: "demo@saleor.io"
 			billingAddress: {
 				firstName: "John"

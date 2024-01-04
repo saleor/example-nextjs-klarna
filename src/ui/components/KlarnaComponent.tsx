@@ -4,6 +4,7 @@ import { useEffect } from "react";
 
 export const KlarnaComponent = ({
 	klarnaSession,
+	onComplete,
 }: {
 	klarnaSession: {
 		client_token: string;
@@ -21,6 +22,7 @@ export const KlarnaComponent = ({
 			| undefined;
 		session_id: string;
 	};
+	onComplete: () => Promise<void>;
 }) => {
 	useEffect(() => {
 		if (typeof window === "undefined" || "Klarna" in window) {
@@ -42,11 +44,12 @@ export const KlarnaComponent = ({
 						},
 					],
 					customer: {
-						date_of_birth: "1970-01-01",
+						date_of_birth: "1980-01-01",
 					},
 				},
-				function (res) {
-					console.debug(res);
+				async function (...args) {
+					console.log(...args);
+					await onComplete();
 				},
 			);
 			// Klarna.Payments.load(
