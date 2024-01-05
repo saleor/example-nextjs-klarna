@@ -13,13 +13,14 @@ export default async function Page() {
 		query: ProductListDocument,
 	});
 
-	console.dir(data.products, { depth: 999 });
 	const product = data.products?.edges.find((p) => p.node.productType.isShippingRequired === false)?.node;
 
 	if (!product?.defaultVariant) {
 		notFound();
 	}
 	const variant = product.defaultVariant;
+
+	console.log(variant);
 
 	async function addToCart() {
 		"use server";
@@ -33,7 +34,8 @@ export default async function Page() {
 		});
 
 		if (!response.checkoutCreate?.checkout?.id) {
-			throw new Error("Failed to create checkout");
+			console.log(response.checkoutCreate?.errors);
+			throw new Error("Failed to create checkout", { cause: response.checkoutCreate?.errors });
 		}
 
 		cookies().set("checkoutId", response.checkoutCreate.checkout.id);

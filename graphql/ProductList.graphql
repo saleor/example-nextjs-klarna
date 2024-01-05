@@ -1,5 +1,5 @@
 query ProductList {
-	products(first: 100, channel: "channel-pln", where: { isAvailable: true }) {
+	products(first: 100, channel: "channel-pln", where: { isAvailable: true, stockAvailability: IN_STOCK }) {
 		edges {
 			node {
 				id
