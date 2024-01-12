@@ -1,7 +1,7 @@
 import { getCheckoutFromCookiesOrRedirect } from "@/lib/app-router";
-import { CheckoutCompleteDocument, TransactionInitializeDocument } from "@/generated/graphql";
 import { executeGraphQL, klarnaAppId } from "@/lib/common";
-import { KlarnaComponent } from "@/ui/components/KlarnaComponent";
+import { KlarnaData } from "@/app/app-router/cart/pay/[klarnaClientToken]/page";
+import { TransactionInitializeDocument } from "@/generated/graphql";
 import { redirect } from "next/navigation";
 
 export default async function CartPage() {
@@ -20,72 +20,30 @@ export default async function CartPage() {
 		);
 	}
 
-	const transaction = await executeGraphQL({
-		query: TransactionInitializeDocument,
-		variables: {
-			checkoutId: checkout.id,
-			data: {},
-		},
-		cache: "no-store",
-	});
-
-	const klarnaData = transaction.transactionInitialize?.data as
-		| undefined
-		| {
-				klarnaSessionResponse: {
-					client_token: string;
-					payment_method_categories?:
-						| {
-								asset_urls?:
-									| {
-											descriptive?: string | undefined;
-											standard?: string | undefined;
-									  }
-									| undefined;
-								identifier?: string | undefined;
-								name?: string | undefined;
-						  }[]
-						| undefined;
-					session_id: string;
-				};
-		  };
-
-	if (transaction.transactionInitialize?.errors.length ?? !klarnaData) {
-		return (
-			<div className="text-red-500">
-				<p>Failed to initialize Klarna transaction</p>
-				<pre>{JSON.stringify(transaction, null, 2)}</pre>
-			</div>
-		);
-	}
-
-	console.log({ x: klarnaData.klarnaSessionResponse.payment_method_categories });
-
 	return (
-		<div>
-			<pre>{JSON.stringify(klarnaData, null, 2)}</pre>
-			<KlarnaComponent
-				klarnaSession={klarnaData.klarnaSessionResponse}
-				onComplete={async () => {
-					"use server";
-					console.log("onComplete");
-					const result = await executeGraphQL({
-						query: CheckoutCompleteDocument,
-						variables: {
-							checkoutId: checkout.id,
-						},
-					});
-					if (result.checkoutComplete?.errors.length) {
-						console.error(result.checkoutComplete.errors);
-					} else if (!result.checkoutComplete?.order) {
-						console.error("No order returned");
-					} else if (result.checkoutComplete.order.errors.length) {
-						console.error(result.checkoutComplete.order.errors);
-					} else {
-						redirect(`/app-router/cart/success/${result.checkoutComplete.order.id}`);
-					}
-				}}
-			/>
-		</div>
+		<form
+			action={async () => {
+				"use server";
+				const transaction = await executeGraphQL({
+					query: TransactionInitializeDocument,
+					variables: {
+						checkoutId: checkout.id,
+						data: {},
+					},
+					cache: "no-store",
+				});
+
+				const klarnaData = transaction.transactionInitialize?.data as undefined | KlarnaData;
+				if (transaction.transactionInitialize?.errors.length ?? !klarnaData) {
+					console.error(transaction.transactionInitialize?.errors);
+					return;
+				}
+				redirect(`/app-router/cart/pay/${klarnaData.klarnaSessionResponse.client_token}`);
+			}}
+		>
+			<button type="submit" className="rounded-md border p-2 shadow-md">
+				Pay with Klarna
+			</button>
+		</form>
 	);
 }
