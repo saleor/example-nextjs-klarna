@@ -1,5 +1,5 @@
 mutation TransactionInitialize($checkoutId: ID!, $data: JSON) {
-	transactionInitialize(id: $checkoutId, paymentGateway: { id: "app.saleor.klarna", data: $data }) {
+	transactionInitialize(id: $checkoutId, paymentGateway: { id: "app.saleor.sequra", data: $data }) {
 		transaction {
 			id
 		}

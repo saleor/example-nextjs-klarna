@@ -1,5 +1,5 @@
 {
-	"name": "example-nextjs-klarna",
+	"name": "example-nextjs-sequra",
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
@@ -12,6 +12,7 @@
 		"postinstall": "pnpm generate"
 	},
 	"dependencies": {
+		"dangerously-set-html-content": "1.1.0",
 		"graphql": "16.8.0",
 		"graphql-tag": "2.12.6",
 		"next": "14.0.3",
