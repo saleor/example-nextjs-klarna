@@ -1,6 +1,6 @@
 import { TypedDocumentString } from "@/generated/graphql";
 
-export const klarnaAppId = `app.saleor.klarna`;
+export const sequraAppId = `app.saleor.sequra`;
 
 export const formatMoney = (amount: number, currency: string) =>
 	new Intl.NumberFormat("en-US", {

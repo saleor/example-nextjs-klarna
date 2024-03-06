@@ -1,68 +1,65 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
-export const KlarnaComponent = ({
-	klarnaSession,
+export const SequraComponent = ({
+	sequraClientToken,
 	onComplete,
 }: {
-	klarnaSession: {
-		client_token: string;
-		payment_method_categories?:
-			| {
-					asset_urls?:
-						| {
-								descriptive?: string | undefined;
-								standard?: string | undefined;
-						  }
-						| undefined;
-					identifier?: string | undefined;
-					name?: string | undefined;
-			  }[]
-			| undefined;
-		session_id: string;
-	};
+	sequraClientToken: string;
 	onComplete: () => Promise<void>;
 }) => {
+	const isInitializedRef = useRef(false);
+
 	useEffect(() => {
-		if (typeof window === "undefined" || "Klarna" in window) {
+		if (typeof window === "undefined" || "Sequra" in window) {
 			return;
 		}
+		if (isInitializedRef.current) {
+			return;
+		}
+		isInitializedRef.current = true;
+		console.log("useEffect");
 
-		// @ts-expect-error -- klarna callback
-		window.klarnaAsyncCallback = () => {
-			Klarna.Payments.init({
-				client_token: klarnaSession.client_token,
+		// @ts-expect-error -- sequra callback
+		window.sequraAsyncCallback = () => {
+			console.log("sequraAsyncCallback");
+			// @ts-expect-error -- sequra callback
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+			Sequra.Payments.init({
+				client_token: sequraClientToken,
 			});
-			Klarna.Payments.authorize(
+			// @ts-expect-error -- sequra callback
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+			Sequra.Payments.authorize(
 				{
 					payment_method_categories: [
 						{
 							asset_urls: {},
-							identifier: "klarna",
-							name: "Pay with Klarna",
+							identifier: "sequra",
+							name: "Pay with Sequra",
 						},
 					],
 					customer: {
 						date_of_birth: "1980-01-01",
 					},
 				},
-				async function (...args) {
+				async function (...args: unknown[]) {
 					console.log(...args);
 					await onComplete();
 				},
 			);
-			// Klarna.Payments.load(
+			// Sequra.Payments.load(
 			// 	{
-			// 		container: "#klarna-payments-container",
-			// 		// payment_method_categories: klarnaSession.payment_method_categories,
+			// 		container: "#sequra-payments-container",
+			// 		// payment_method_categories: sequraSession.payment_method_categories,
 			// 		// payment_method_category: "pay_later",
 			// 		// payment_method_categories: [{ identifier: "pay_later" }],
 			// 		payment_method_categories: [
 			// 			{
 			// 				asset_urls: {},
-			// 				identifier: "klarna",
-			// 				name: "Pay with Klarna",
+			// 				identifier: "sequra",
+			// 				name: "Pay with Sequra",
 			// 			},
 			// 		],
 			// 	},
@@ -73,11 +70,11 @@ export const KlarnaComponent = ({
 		};
 
 		const script = document.createElement("script");
-		script.id = "klarna-payments-sdk";
-		script.src = `https://x.klarnacdn.net/kp/lib/v1/api.js`;
+		script.id = "sequra-payments-sdk";
+		script.src = `https://x.sequracdn.net/kp/lib/v1/api.js`;
 		script.async = true;
 		document.body.appendChild(script);
-	}, []);
+	}, [sequraClientToken, onComplete]);
 
-	return <div id="klarna-payments-container" />;
+	return <div id="sequra-payments-container" />;
 };
