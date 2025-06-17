@@ -34,6 +34,10 @@
   <a href="https://discord.gg/H52JTZAtSH">💬 Discord</a>
 </div>
 
+> [!WARNING]
+> This repository is not longer maintained - go to https://github.com/saleor/examples for Saleor examples
+
+
 ## Motivation
 
 🤏 **Bare bones**: Useful for prototyping or building your stack from scratch.
